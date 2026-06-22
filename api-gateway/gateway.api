@@ -1,0 +1,39 @@
+syntax = "v1"
+
+type HealthResp {
+	Status  string `json:"status"`
+	Version string `json:"version"`
+}
+
+type WorkflowItem {
+	Id          int64  `json:"id"`
+	Name        string `json:"name"`
+	TriggerType string `json:"triggerType"`
+	IsActive    bool   `json:"isActive"`
+}
+
+type ListWorkflowsResp {
+	Items []WorkflowItem `json:"items"`
+	Total int64          `json:"total"`
+}
+
+type TriggerReq {
+	WorkflowId int64 `path:"workflowId"`
+}
+
+type TriggerResp {
+	Message     string `json:"message"`
+	ExecutionId int64  `json:"executionId"`
+}
+
+service gateway-api {
+	@handler HealthHandler
+	get /health returns (HealthResp)
+
+	@handler ListWorkflowsHandler
+	get /workflows returns (ListWorkflowsResp)
+
+	@handler TriggerWorkflowHandler
+	post /webhooks/:workflowId (TriggerReq) returns (TriggerResp)
+}
+
