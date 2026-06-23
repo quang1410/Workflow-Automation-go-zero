@@ -5,11 +5,50 @@ type HealthResp {
 	Version string `json:"version"`
 }
 
+// --- Workflow types ---
 type WorkflowItem {
-	Id          int64  `json:"id"`
-	Name        string `json:"name"`
-	TriggerType string `json:"triggerType"`
-	IsActive    bool   `json:"isActive"`
+	Id            int64  `json:"id"`
+	Name          string `json:"name"`
+	TriggerType   string `json:"triggerType"`
+	TriggerConfig string `json:"triggerConfig"`
+	Steps         string `json:"steps"`
+	IsActive      bool   `json:"isActive"`
+}
+
+type CreateWorkflowReq {
+	Name          string `json:"name"`
+	TriggerType   string `json:"triggerType"`
+	TriggerConfig string `json:"triggerConfig,optional"`
+	Steps         string `json:"steps,optional"`
+}
+
+type CreateWorkflowResp {
+	Id int64 `json:"id"`
+}
+
+type GetWorkflowReq {
+	Id int64 `path:"id"`
+}
+
+type UpdateWorkflowReq {
+	Id            int64  `path:"id"`
+	Name          string `json:"name,optional"`
+	TriggerType   string `json:"triggerType,optional"`
+	TriggerConfig string `json:"triggerConfig,optional"`
+	Steps         string `json:"steps,optional"`
+	IsActive      bool   `json:"isActive,optional"`
+}
+
+type UpdateWorkflowResp {
+	Ok bool `json:"ok"`
+}
+
+type DeleteWorkflowReq {
+	Id int64 `path:"id"`
+}
+
+type DeleteWorkflowResp {
+	Ok bool `json:"ok"`
 }
 
 type ListWorkflowsResp {
@@ -17,8 +56,10 @@ type ListWorkflowsResp {
 	Total int64          `json:"total"`
 }
 
+// --- Execution types ---
 type TriggerReq {
-	WorkflowId int64 `path:"workflowId"`
+	WorkflowId int64  `path:"workflowId"`
+	Payload    string `json:"payload,optional"`
 }
 
 type TriggerResp {
@@ -26,14 +67,66 @@ type TriggerResp {
 	ExecutionId int64  `json:"executionId"`
 }
 
+type ListExecutionsReq {
+	WorkflowId int64 `path:"workflowId"`
+}
+
+type StepLogItem {
+	Id         int64  `json:"id"`
+	StepID     string `json:"stepId"`
+	StepType   string `json:"stepType"`
+	Status     string `json:"status"`
+	Input      string `json:"input"`
+	Output     string `json:"output"`
+	Error      string `json:"error"`
+	DurationMs int64  `json:"durationMs"`
+}
+
+type ExecutionItem {
+	Id        int64         `json:"id"`
+	Status    string        `json:"status"`
+	StartedAt string        `json:"startedAt"`
+	StepLogs  []StepLogItem `json:"stepLogs"`
+}
+
+type ListExecutionsResp {
+	Items []ExecutionItem `json:"items"`
+	Total int64           `json:"total"`
+}
+
+type GetExecutionReq {
+	Id int64 `path:"id"`
+}
+
 service gateway-api {
 	@handler HealthHandler
 	get /health returns (HealthResp)
 
+	// Workflow CRUD
 	@handler ListWorkflowsHandler
 	get /workflows returns (ListWorkflowsResp)
 
+	@handler CreateWorkflowHandler
+	post /workflows (CreateWorkflowReq) returns (CreateWorkflowResp)
+
+	@handler GetWorkflowHandler
+	get /workflows/:id (GetWorkflowReq) returns (WorkflowItem)
+
+	@handler UpdateWorkflowHandler
+	put /workflows/:id (UpdateWorkflowReq) returns (UpdateWorkflowResp)
+
+	@handler DeleteWorkflowHandler
+	delete /workflows/:id (DeleteWorkflowReq) returns (DeleteWorkflowResp)
+
+	// Webhook trigger
 	@handler TriggerWorkflowHandler
 	post /webhooks/:workflowId (TriggerReq) returns (TriggerResp)
+
+	// Execution APIs
+	@handler ListExecutionsHandler
+	get /workflows/:workflowId/executions (ListExecutionsReq) returns (ListExecutionsResp)
+
+	@handler GetExecutionHandler
+	get /executions/:id (GetExecutionReq) returns (ExecutionItem)
 }
 

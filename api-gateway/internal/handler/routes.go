@@ -12,23 +12,21 @@ import (
 )
 
 func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
-	server.AddRoutes(
-		[]rest.Route{
-			{
-				Method:  http.MethodGet,
-				Path:    "/health",
-				Handler: HealthHandler(serverCtx),
-			},
-			{
-				Method:  http.MethodPost,
-				Path:    "/webhooks/:workflowId",
-				Handler: TriggerWorkflowHandler(serverCtx),
-			},
-			{
-				Method:  http.MethodGet,
-				Path:    "/workflows",
-				Handler: ListWorkflowsHandler(serverCtx),
-			},
-		},
-	)
+	server.AddRoutes([]rest.Route{
+		{Method: http.MethodGet, Path: "/health", Handler: HealthHandler(serverCtx)},
+	})
+
+	server.AddRoutes([]rest.Route{
+		{Method: http.MethodGet, Path: "/workflows", Handler: ListWorkflowsHandler(serverCtx)},
+		{Method: http.MethodPost, Path: "/workflows", Handler: CreateWorkflowHandler(serverCtx)},
+		{Method: http.MethodGet, Path: "/workflows/:id", Handler: GetWorkflowHandler(serverCtx)},
+		{Method: http.MethodPut, Path: "/workflows/:id", Handler: UpdateWorkflowHandler(serverCtx)},
+		{Method: http.MethodDelete, Path: "/workflows/:id", Handler: DeleteWorkflowHandler(serverCtx)},
+	})
+
+	server.AddRoutes([]rest.Route{
+		{Method: http.MethodPost, Path: "/webhooks/:workflowId", Handler: TriggerWorkflowHandler(serverCtx)},
+		{Method: http.MethodGet, Path: "/workflows/:workflowId/executions", Handler: ListExecutionsHandler(serverCtx)},
+		{Method: http.MethodGet, Path: "/executions/:id", Handler: GetExecutionHandler(serverCtx)},
+	})
 }

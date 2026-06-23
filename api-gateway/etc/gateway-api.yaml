@@ -1,3 +1,6 @@
 Name: gateway-api
 Host: 0.0.0.0
 Port: 8888
+
+DB:
+  DSN: "host=localhost user=workflow password=workflow dbname=workflow_db port=5432 sslmode=disable TimeZone=Asia/Ho_Chi_Minh"

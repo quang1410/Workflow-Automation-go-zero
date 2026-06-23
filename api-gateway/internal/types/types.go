@@ -3,9 +3,52 @@
 
 package types
 
+type CreateWorkflowReq struct {
+	Name          string `json:"name"`
+	TriggerType   string `json:"triggerType"`
+	TriggerConfig string `json:"triggerConfig,optional"`
+	Steps         string `json:"steps,optional"`
+}
+
+type CreateWorkflowResp struct {
+	Id int64 `json:"id"`
+}
+
+type DeleteWorkflowReq struct {
+	Id int64 `path:"id"`
+}
+
+type DeleteWorkflowResp struct {
+	Ok bool `json:"ok"`
+}
+
+type ExecutionItem struct {
+	Id        int64         `json:"id"`
+	Status    string        `json:"status"`
+	StartedAt string        `json:"startedAt"`
+	StepLogs  []StepLogItem `json:"stepLogs"`
+}
+
+type GetExecutionReq struct {
+	Id int64 `path:"id"`
+}
+
+type GetWorkflowReq struct {
+	Id int64 `path:"id"`
+}
+
 type HealthResp struct {
 	Status  string `json:"status"`
 	Version string `json:"version"`
+}
+
+type ListExecutionsReq struct {
+	WorkflowId int64 `path:"workflowId"`
+}
+
+type ListExecutionsResp struct {
+	Items []ExecutionItem `json:"items"`
+	Total int64           `json:"total"`
 }
 
 type ListWorkflowsResp struct {
@@ -13,8 +56,20 @@ type ListWorkflowsResp struct {
 	Total int64          `json:"total"`
 }
 
+type StepLogItem struct {
+	Id         int64  `json:"id"`
+	StepID     string `json:"stepId"`
+	StepType   string `json:"stepType"`
+	Status     string `json:"status"`
+	Input      string `json:"input"`
+	Output     string `json:"output"`
+	Error      string `json:"error"`
+	DurationMs int64  `json:"durationMs"`
+}
+
 type TriggerReq struct {
-	WorkflowId int64 `path:"workflowId"`
+	WorkflowId int64  `path:"workflowId"`
+	Payload    string `json:"payload,optional"`
 }
 
 type TriggerResp struct {
@@ -22,9 +77,24 @@ type TriggerResp struct {
 	ExecutionId int64  `json:"executionId"`
 }
 
+type UpdateWorkflowReq struct {
+	Id            int64  `path:"id"`
+	Name          string `json:"name,optional"`
+	TriggerType   string `json:"triggerType,optional"`
+	TriggerConfig string `json:"triggerConfig,optional"`
+	Steps         string `json:"steps,optional"`
+	IsActive      bool   `json:"isActive,optional"`
+}
+
+type UpdateWorkflowResp struct {
+	Ok bool `json:"ok"`
+}
+
 type WorkflowItem struct {
-	Id          int64  `json:"id"`
-	Name        string `json:"name"`
-	TriggerType string `json:"triggerType"`
-	IsActive    bool   `json:"isActive"`
+	Id            int64  `json:"id"`
+	Name          string `json:"name"`
+	TriggerType   string `json:"triggerType"`
+	TriggerConfig string `json:"triggerConfig"`
+	Steps         string `json:"steps"`
+	IsActive      bool   `json:"isActive"`
 }
