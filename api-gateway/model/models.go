@@ -9,6 +9,7 @@ import (
 
 type Workflow struct {
 	gorm.Model
+	UserID        string         `gorm:"index"`    // Keycloak subject (sub claim)
 	Name          string         `gorm:"not null"`
 	TriggerType   string         `gorm:"not null"` // webhook, schedule, manual
 	TriggerConfig datatypes.JSON

@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package engine;
+
+option go_package = "execution-engine/pb";
+
+service ExecutionEngine {
+  // RunExecution runs a workflow synchronously and returns when finished.
+  rpc RunExecution(RunExecutionReq) returns (RunExecutionResp);
+
+  // StreamExecution runs a workflow and streams progress events back to caller.
+  rpc StreamExecution(RunExecutionReq) returns (stream ExecutionEvent);
+}
+
+message RunExecutionReq {
+  int64  execution_id    = 1;
+  int64  workflow_id     = 2;
+  string trigger_payload = 3;
+}
+
+message RunExecutionResp {
+  string status = 1; // "success" or "failed"
+  string error  = 2;
+}
+
+message ExecutionEvent {
+  string event_type  = 1; // "step_done" | "finished"
+  string step_id     = 2;
+  string status      = 3; // "success" | "failed"
+  int64  duration_ms = 4;
+  string error       = 5;
+}

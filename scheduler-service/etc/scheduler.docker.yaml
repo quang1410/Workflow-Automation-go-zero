@@ -1,0 +1,2 @@
+DSN: "host=postgres user=workflow password=workflow dbname=workflow_db port=5432 sslmode=disable TimeZone=Asia/Ho_Chi_Minh"
+RabbitMQURL: "amqp://workflow:workflow@rabbitmq:5672/"

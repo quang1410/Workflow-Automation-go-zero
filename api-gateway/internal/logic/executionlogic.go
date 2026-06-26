@@ -3,8 +3,10 @@ package logic
 import (
 	"context"
 	"errors"
+	"fmt"
 	"time"
 
+	"api-gateway/internal/queue"
 	"api-gateway/internal/svc"
 	"api-gateway/internal/types"
 	"api-gateway/model"
@@ -35,29 +37,35 @@ func (l *TriggerWorkflowLogic) TriggerWorkflow(req *types.TriggerReq) (*types.Tr
 		return nil, err
 	}
 
-	var execution model.Execution
-	txErr := l.svcCtx.DB.Transaction(func(tx *gorm.DB) error {
-		execution = model.Execution{
-			WorkflowID:     uint(req.WorkflowId),
-			Status:         "running",
-			StartedAt:      time.Now(),
-			TriggerPayload: datatypes.JSON(req.Payload),
-		}
-		if err := tx.Create(&execution).Error; err != nil {
-			return err
-		}
-		// Placeholder — Stage 3 sẽ chạy steps thật
-		steps := []model.StepLog{
-			{ExecutionID: execution.ID, StepID: "step1", StepType: "pending", Status: "pending"},
-		}
-		return tx.Create(&steps).Error
-	})
-	if txErr != nil {
-		return nil, txErr
+	payload := req.Payload
+	if payload == "" {
+		payload = "{}"
+	}
+
+	// Create execution as "pending" — the worker will transition it to "running"
+	// once it dequeues and starts processing.
+	execution := model.Execution{
+		WorkflowID:     uint(req.WorkflowId),
+		Status:         "pending",
+		StartedAt:      time.Now(),
+		TriggerPayload: datatypes.JSON(payload),
+	}
+	if err := l.svcCtx.DB.Create(&execution).Error; err != nil {
+		return nil, err
+	}
+
+	// Publish to RabbitMQ and return immediately — execution runs asynchronously.
+	msg := queue.ExecutionMessage{
+		ExecutionID:    execution.ID,
+		WorkflowID:     uint(req.WorkflowId),
+		TriggerPayload: payload,
+	}
+	if err := l.svcCtx.Queue.Publish(l.ctx, msg); err != nil {
+		return nil, fmt.Errorf("enqueue execution: %w", err)
 	}
 
 	return &types.TriggerResp{
-		Message:     "workflow triggered successfully",
+		Message:     "execution queued",
 		ExecutionId: int64(execution.ID),
 	}, nil
 }

@@ -1,0 +1,6 @@
+Port: 9090
+DSN: "host=localhost user=workflow password=workflow dbname=workflow_db port=5432 sslmode=disable TimeZone=Asia/Ho_Chi_Minh"
+RedisAddr: "localhost:6379"
+JaegerEndpoint: "localhost:4317"
+AnthropicAPIKey: ""   # override here or use ANTHROPIC_API_KEY env var
+OpenAIAPIKey: ""      # override here or use OPENAI_API_KEY env var

@@ -98,9 +98,30 @@ type GetExecutionReq {
 	Id int64 `path:"id"`
 }
 
+type StreamExecutionReq {
+	Id int64 `path:"id"`
+}
+
+// --- Auth types (Stage 5) ---
+type LoginReq {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
+type LoginResp {
+	AccessToken  string `json:"access_token"`
+	RefreshToken string `json:"refresh_token,omitempty"`
+	ExpiresIn    int    `json:"expires_in"`
+	TokenType    string `json:"token_type"`
+}
+
+// Public routes — no auth required
 service gateway-api {
 	@handler HealthHandler
 	get /health returns (HealthResp)
+
+	@handler LoginHandler
+	post /auth/login (LoginReq) returns (LoginResp)
 
 	// Workflow CRUD
 	@handler ListWorkflowsHandler
@@ -128,5 +149,9 @@ service gateway-api {
 
 	@handler GetExecutionHandler
 	get /executions/:id (GetExecutionReq) returns (ExecutionItem)
+
+	// Server-Sent Events stream for real-time execution updates
+	@handler ExecutionStreamHandler
+	get /executions/:id/stream (StreamExecutionReq)
 }
 

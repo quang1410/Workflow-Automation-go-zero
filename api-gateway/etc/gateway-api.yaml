@@ -4,3 +4,23 @@ Port: 8888
 
 DB:
   DSN: "host=localhost user=workflow password=workflow dbname=workflow_db port=5432 sslmode=disable TimeZone=Asia/Ho_Chi_Minh"
+
+Redis:
+  Addr: "localhost:6379"
+
+Auth:
+  JWKSUrl: "http://localhost:8080/realms/workflow-app/protocol/openid-connect/certs"
+  KeycloakURL: "http://localhost:8080"
+
+RabbitMQ:
+  URL: "amqp://workflow:workflow@localhost:5672/"
+  WorkerCount: 5
+
+Engine:
+  Addr: "localhost:9090"
+
+Telemetry:
+  Name: api-gateway
+  Endpoint: localhost:4317
+  Sampler: 1.0
+  Batcher: otlpgrpc

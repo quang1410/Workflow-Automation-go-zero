@@ -1,0 +1,6 @@
+Port: 9090
+DSN: "host=postgres user=workflow password=workflow dbname=workflow_db port=5432 sslmode=disable TimeZone=Asia/Ho_Chi_Minh"
+RedisAddr: "redis:6379"
+JaegerEndpoint: "jaeger:4317"
+AnthropicAPIKey: ""   # overridden by ANTHROPIC_API_KEY env var at runtime
+OpenAIAPIKey: ""      # overridden by OPENAI_API_KEY env var at runtime

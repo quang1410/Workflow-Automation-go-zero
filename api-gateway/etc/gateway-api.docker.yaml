@@ -1,0 +1,26 @@
+Name: gateway-api
+Host: 0.0.0.0
+Port: 8888
+
+DB:
+  DSN: "host=postgres user=workflow password=workflow dbname=workflow_db port=5432 sslmode=disable TimeZone=Asia/Ho_Chi_Minh"
+
+Redis:
+  Addr: "redis:6379"
+
+Auth:
+  JWKSUrl: "http://keycloak:8080/realms/workflow-app/protocol/openid-connect/certs"
+  KeycloakURL: "http://keycloak:8080"
+
+RabbitMQ:
+  URL: "amqp://workflow:workflow@rabbitmq:5672/"
+  WorkerCount: 5
+
+Engine:
+  Addr: "execution-engine:9090"
+
+Telemetry:
+  Name: api-gateway
+  Endpoint: jaeger:4317
+  Sampler: 1.0
+  Batcher: otlpgrpc

@@ -1,0 +1,46 @@
+{
+  "realm": "workflow-app",
+  "enabled": true,
+  "registrationAllowed": false,
+  "accessTokenLifespan": 3600,
+  "clients": [
+    {
+      "clientId": "workflow-client",
+      "enabled": true,
+      "publicClient": true,
+      "directAccessGrantsEnabled": true,
+      "standardFlowEnabled": false,
+      "implicitFlowEnabled": false
+    }
+  ],
+  "roles": {
+    "realm": [
+      { "name": "user", "composite": false },
+      { "name": "admin", "composite": false }
+    ]
+  },
+  "users": [
+    {
+      "username": "alice",
+      "enabled": true,
+      "email": "alice@example.com",
+      "firstName": "Alice",
+      "lastName": "User",
+      "credentials": [
+        { "type": "password", "value": "alice123", "temporary": false }
+      ],
+      "realmRoles": ["user"]
+    },
+    {
+      "username": "bob",
+      "enabled": true,
+      "email": "bob@example.com",
+      "firstName": "Bob",
+      "lastName": "Admin",
+      "credentials": [
+        { "type": "password", "value": "bob123", "temporary": false }
+      ],
+      "realmRoles": ["admin"]
+    }
+  ]
+}
